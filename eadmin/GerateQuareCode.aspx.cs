@@ -11,20 +11,63 @@ using System.Web.UI.WebControls;
 
 public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 {
+    const int DefaultPageSize = 10;
+
     string extension;
     static string FileNameUp, widthup, heightup;
     static int idup;
+
+    private int CurrentPage
+    {
+        get { return ViewState["CurrentPage"] == null ? 1 : (int)ViewState["CurrentPage"]; }
+        set { ViewState["CurrentPage"] = value; }
+    }
+
+    private int PageSize
+    {
+        get { return ViewState["PageSize"] == null ? DefaultPageSize : (int)ViewState["PageSize"]; }
+        set { ViewState["PageSize"] = value; }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
-            //updatePanel.Visible = false;
-            fillSlider();
-           // GenrateQuareCode("GGTL104398");
+            CurrentPage = 1;
+            PageSize = DefaultPageSize;
+            ddlPageSize.SelectedValue = PageSize.ToString();
             panelMessage.Visible = false;
             panel1.Visible = false;
-
         }
+        BindData();
+    }
+
+    private void BindData()
+    {
+        SliderData sdata = new SliderData();
+        DataSet dsCount = sdata.getSlider("select count(*) as cnt from slider");
+        int totalCount = 0;
+        if (dsCount.Tables[0].Rows.Count > 0)
+            totalCount = int.Parse(dsCount.Tables[0].Rows[0]["cnt"].ToString());
+
+        int totalPages = totalCount == 0 ? 1 : (int)Math.Ceiling((double)totalCount / PageSize);
+        if (CurrentPage > totalPages) CurrentPage = totalPages;
+        if (CurrentPage < 1) CurrentPage = 1;
+
+        int offset = (CurrentPage - 1) * PageSize;
+        DataSet ds = sdata.getSlider("select * from slider order by id desc limit " + PageSize + " offset " + offset);
+        rpSilder.DataSource = ds;
+        rpSilder.DataBind();
+
+        int start = totalCount == 0 ? 0 : (CurrentPage - 1) * PageSize + 1;
+        int end = totalCount == 0 ? 0 : Math.Min(CurrentPage * PageSize, totalCount);
+        lblInfo.Text = "Showing " + start + " to " + end + " of " + totalCount.ToString("N0") + " entries";
+
+        rptPages.DataSource = PaginationHelper.BuildPages(CurrentPage, totalPages);
+        rptPages.DataBind();
+
+        btnPrev.Enabled = CurrentPage > 1;
+        btnNext.Enabled = CurrentPage < totalPages;
     }
 
     private string ShrinkURL(string strURL)
@@ -58,18 +101,6 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 
         return (strHTML);
 
-    }
-    private void fillSlider()
-    {
-        SliderData sdata = new SliderData();
-        DataSet ds = sdata.getSlider("select * from slider");
-        if (ds.Tables[0].Rows.Count > 0)
-        {
-            rpSilder.DataSource = ds;
-            rpSilder.DataBind();
-
-
-        }
     }
     protected void btnUpload_Click(object sender, EventArgs e)
     {
@@ -210,12 +241,40 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
             resetup();
             updatePanel.Visible = false;
             viewPanel.Visible = true;
-            fillSlider();
+            BindData();
             panelMessage.Visible = true;
 
         }
         catch (Exception ex)
         { }
+    }
+
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        PageSize = int.Parse(ddlPageSize.SelectedValue);
+        CurrentPage = 1;
+        BindData();
+    }
+
+    protected void rptPages_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        CurrentPage = int.Parse(e.CommandArgument.ToString());
+        BindData();
+    }
+
+    protected void btnPrev_Click(object sender, EventArgs e)
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            BindData();
+        }
+    }
+
+    protected void btnNext_Click(object sender, EventArgs e)
+    {
+        CurrentPage++;
+        BindData();
     }
 
     private void resetup()
@@ -244,7 +303,7 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 
             }
         }
-        fillSlider();
+        BindData();
         panelMessage.Visible = true;
         Response.Redirect("GerateQuareCode.aspx");
     }

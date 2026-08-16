@@ -60,8 +60,19 @@
                                         </div>
                                         
                                             <div class="panel-body">
+                                                <div class="dataTables_wrapper">
+                                                    <div class="dataTables_length" style="margin-bottom:10px;">
+                                                        <label>Show
+                                                            <asp:DropDownList ID="ddlPageSize" runat="server" CssClass="form-control input-sm" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                                                <asp:ListItem Text="10" Value="10" />
+                                                                <asp:ListItem Text="25" Value="25" />
+                                                                <asp:ListItem Text="50" Value="50" />
+                                                                <asp:ListItem Text="100" Value="100" />
+                                                            </asp:DropDownList>
+                                                            entries</label>
+                                                    </div>
                                                 <div class="table-responsive">
-                                                    <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                                    <table id="example" class="table table-striped table-bordered serverpaged" cellspacing="0" width="100%">
                                                         <thead>
                                                             <tr>
                                                                <th>S.No</th>
@@ -100,6 +111,34 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                                <div class="row" style="margin-top:10px;">
+                                                    <div class="col-md-6">
+                                                        <div class="dataTables_info" role="status" aria-live="polite">
+                                                            <asp:Label ID="lblInfo" runat="server"></asp:Label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="dataTables_paginate paging_simple_numbers">
+                                                            <ul class="pagination">
+                                                                <li class="paginate_button previous">
+                                                                    <asp:LinkButton ID="btnPrev" runat="server" OnClick="btnPrev_Click">Previous</asp:LinkButton>
+                                                                </li>
+                                                                <asp:Repeater ID="rptPages" runat="server" OnItemCommand="rptPages_ItemCommand">
+                                                                    <ItemTemplate>
+                                                                        <li class="paginate_button <%# (bool)Eval("IsCurrent") ? "active" : "" %>">
+                                                                            <asp:LinkButton ID="lnkPage" runat="server" CommandName="page" CommandArgument='<%# Eval("PageNum") %>' Visible='<%# !(bool)Eval("IsEllipsis") %>'><%# Eval("DisplayText") %></asp:LinkButton>
+                                                                            <asp:Label ID="lblEllipsis" runat="server" Visible='<%# (bool)Eval("IsEllipsis") %>' Text="..."></asp:Label>
+                                                                        </li>
+                                                                    </ItemTemplate>
+                                                                </asp:Repeater>
+                                                                <li class="paginate_button next">
+                                                                    <asp:LinkButton ID="btnNext" runat="server" OnClick="btnNext_Click">Next</asp:LinkButton>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                                 
                                             </div>
                                         
