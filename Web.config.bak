@@ -1,0 +1,65 @@
+﻿<?xml version="1.0"?>
+<configuration>
+  <configSections>
+    <sectionGroup name="businessObjects">
+      <sectionGroup name="crystalReports">
+        <section name="rptBuildProvider" type="CrystalDecisions.Shared.RptBuildProviderHandler, CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, Custom=null"/>
+      </sectionGroup>
+    </sectionGroup>
+  </configSections>
+
+  <appSettings>
+   
+   
+    <add key="action" value=""/>
+    <add key="hashSequence" value="key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10"/>
+      <add key="ValidationSettings:UnobtrusiveValidationMode" value="None" />
+
+  </appSettings>
+  <connectionStrings>
+    <remove name="mySQLconn"/>
+
+
+
+
+<add name="mySQLconn" connectionString="Server=p3nlmysql131plsk.secureserver.net; Port=3306; Database=gemstonecertificationlab;User Id=gemstonecertificationlab; Pooling=True; Password=gemstonecertificationlab@123; Persist Security Info=True" providerName="MySql.Data.MySqlClient" />
+  </connectionStrings>
+  <system.web>
+
+    <compilation debug="true" targetFramework="4.5">
+
+      <assemblies>
+        <add assembly="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+        <add assembly="WindowsBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+      </assemblies>
+      <buildProviders>
+        <add extension=".rpt" type="CrystalDecisions.Web.Compilation.RptBuildProvider, CrystalDecisions.Web, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304"/>
+      </buildProviders>
+    </compilation>
+
+    <httpRuntime targetFramework="4.5"/>
+
+    <customErrors mode="Off"/>
+    <authorization>
+      <allow users="*"/>
+    </authorization>
+    <securityPolicy>
+      <trustLevel name="Full" policyFile="internal"/>
+    </securityPolicy>
+    <trust level="Full"/>
+    <webServices>
+      <protocols>
+        <add name="HttpGet"/>
+        <add name="HttpPost"/>
+      </protocols>
+    </webServices>
+  </system.web>
+  <system.webServer>
+
+
+    <handlers>
+      <remove name="ScriptHandlerFactory"/>
+      <add name="ScriptHandlerFactory" verb="*" path="*.asmx" preCondition="integratedMode" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+    </handlers>
+  </system.webServer>
+</configuration>

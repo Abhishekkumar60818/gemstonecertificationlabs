@@ -1,0 +1,180 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+
+    <title>GEMSTONE CERTIFICATION LAB</title>
+    <%--<link rel="shortcut icon" type="image/png" href="image/Logo.png" />--%>
+    <!--/tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <script type="application/x-javascript">
+            addEventListener("load", function () {
+            	setTimeout(hideURLbar, 0);
+            }, false);
+
+            function hideURLbar() {
+            	window.scrollTo(0, 1);
+            }
+    </script>
+    <!--//tags -->
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <!-- <link rel="stylesheet" href="css/owl.carousel.css" type="text/css" media="all"> -->
+    <!-- <link rel="stylesheet" href="css/owl.theme.css" type="text/css" media="all"> -->
+    <link href="css/font-awesome.css" rel="stylesheet" />
+    <!-- //for bootstrap working -->
+
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <div class="header">
+        <div class="agileits_top_menu">
+            <div class="w3l_header_left">
+                <ul>
+                    <li>
+                        <i class="fa fa-address" aria-hidden="true"></i>
+                        <%--<p style="font-size: 20px; margin-top: -20px;">GEMSTONE CERTIFICATION LAB</p>--%>
+                        <a href="Default.aspx">
+                            <img src="images/logoheader.png" /></a>
+
+                    </li>
+                    <li><i class="fa fa-phone" aria-hidden="true"></i>+91-9587092478</li>
+                    <li><i class="fa fa-envelope-o" aria-hidden="true"></i><a href="mailto:rgtlab@aliyun.com">rgtlab@aliyun.com</a></li>
+                </ul>
+            </div>
+            <div class="w3l_header_right" style="margin-top: 10px;">
+                <div class="w3ls-social-icons text-left">
+                    <a class="facebook" href="#"><i class="fa fa-facebook"></i></a>
+                    <a class="twitter" href="#"><i class="fa fa-twitter"></i></a>
+                    <a class="pinterest" href="#"><i class="fa fa-pinterest-p"></i></a>
+                    <a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="content white agile-info" style="padding: 0px;">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <!-- <a class="navbar-brand" href="Home">
+							<img src="images/logo.png" alt="Logo" height="100px" class="img-responsive">
+						</a> -->
+                    </div>
+                    <!--/.navbar-header-->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <nav class="link-effect-2" id="link-effect-2">
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href="default.aspx" class="effect-3">Home</a></li>
+                                <li><a href="Aboutus.aspx" class="effect-3">About Us</a></li>
+                                <li><a href="Ourservice.aspx" class="effect-3">Our Services</a></li>
+                                <%--<li><a href="Education.aspx" class="effect-3">Classes</a></li>--%>
+                                <li><a href="Certificate.aspx" class="effect-3">Certificates</a></li>
+                                <li><a href="privancy_policy.aspx" class="effect-3">Privacy Policy</a></li>
+                                <li><a href="Contactus.aspx" class="effect-3">Contact Us</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!--/.navbar-collapse-->
+                    <!--/.navbar-->
+                </div>
+            </nav>
+        </div>
+    </div>
+    <form id="form1" runat="server">
+        <div>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+    <div class="footer_top_agileits">
+        <div class="container">
+            <div class="col-md-3 footer_grid">
+                <!--<h3>Site Information</h3>-->
+                <a href="Default.aspx">
+                    <img src="images/Logo.png" width="150" /></a>
+                <p style="text-align: justify;">This site is owned and registered by <strong>GEMSTONE CERTIFICATION LAB</strong>.</p>
+            </div>
+            <div class="col-md-3 footer_grid">
+                <h3>Site Information</h3>
+                <ul class="footer_grid_list">
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <a href="default.aspx">Home</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <a href="aboutus.aspx">About Us</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <a href="Ourservice.aspx">Our Services</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <a href="Education.aspx">Education</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <a href="Contactus.aspx">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3 footer_grid">
+                <h3>Address</h3>
+                <p>
+                    Petlion Ka Rasta Johri Bazar<br />
+                    Jaipur-302003, Rajasthan (INDIA)
+                </p>
+            </div>
+            <div class="col-md-3 footer_grid">
+                <h3>Contact Info</h3>
+                <ul class="address">
+                    <li><i class="fa fa-globe" aria-hidden="true"></i><a href="default.aspx">GEMSTONECERTIFICATIONLAB.COM</a></li>
+                    <li><i class="fa fa-envelope" aria-hidden="true"></i><a href="mailto:rgtlab@aliyun.com">rgtlab@aliyun.com</a></li>
+                    <li><i class="fa fa-phone" aria-hidden="true"></i>+91-9587092478</li>
+                    <!-- <li><b>Timings :</b></li>
+					<li>Monday to Saturday : 9:00 AM. to 8:00 PM.</li>
+					<li>Sunday : 9:00 AM. to 1:00 PM.</li> -->
+                </ul>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <!-- stats -->
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.countup.js"></script>
+    <script>
+        $(".counter").countUp();
+    </script>
+    <!-- //stats -->
+    <!-- owl carousel -->
+    <script src="js/owl.carousel.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                autoPlay: 3000, //Set AutoPlay to 3 seconds
+                autoPlay: true,
+                items: 3,
+                itemsDesktop: [991, 2],
+                itemsDesktopSmall: [414, 4],
+            });
+        });
+    </script>
+</body>
+</html>
+

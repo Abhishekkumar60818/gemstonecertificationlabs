@@ -1,0 +1,14 @@
+﻿
+.mydialog {
+    width:35%;
+    height:33%;
+    background-color:#e1e1e1;
+    position:fixed;
+    left:30%;
+    top:30%;
+    z-index:999999999;   
+    display:block;
+    border: 2px solid #F25C27;
+    border-radius: 2px;
+    box-shadow: 2px 8px 9px #F25C27;
+}
