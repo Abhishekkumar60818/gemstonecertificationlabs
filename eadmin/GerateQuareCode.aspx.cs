@@ -13,9 +13,29 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 {
     const int DefaultPageSize = 10;
 
-    string extension;
-    static string FileNameUp, widthup, heightup;
-    static int idup;
+    private int idup
+    {
+        get { return ViewState["updId"] == null ? 0 : (int)ViewState["updId"]; }
+        set { ViewState["updId"] = value; }
+    }
+
+    private string FileNameUp
+    {
+        get { return ViewState["updFile"] == null ? "" : ViewState["updFile"].ToString(); }
+        set { ViewState["updFile"] = value; }
+    }
+
+    private string widthup
+    {
+        get { return ViewState["updW"] == null ? "" : ViewState["updW"].ToString(); }
+        set { ViewState["updW"] = value; }
+    }
+
+    private string heightup
+    {
+        get { return ViewState["updH"] == null ? "" : ViewState["updH"].ToString(); }
+        set { ViewState["updH"] = value; }
+    }
 
     private int CurrentPage
     {
@@ -70,74 +90,46 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
         btnNext.Enabled = CurrentPage < totalPages;
     }
 
-    private string ShrinkURL(string strURL)
-    {
-
-        string URL;
-        URL = "http://tinyurl.com/api-create.php?url=" +
-           strURL.ToLower();
-
-        System.Net.HttpWebRequest objWebRequest;
-        System.Net.HttpWebResponse objWebResponse;
-
-        System.IO.StreamReader srReader;
-
-        string strHTML;
-
-        objWebRequest = (System.Net.HttpWebRequest)System.Net
-           .WebRequest.Create(URL);
-        objWebRequest.Method = "GET";
-
-        objWebResponse = (System.Net.HttpWebResponse)objWebRequest
-           .GetResponse();
-        srReader = new System.IO.StreamReader(objWebResponse
-           .GetResponseStream());
-
-        strHTML = srReader.ReadToEnd();
-
-        srReader.Close();
-        objWebResponse.Close();
-        objWebRequest.Abort();
-
-        return (strHTML);
-
-    }
     protected void btnUpload_Click(object sender, EventArgs e)
     {
         try
         {
-
-
-
-              SliderData sdata = new SliderData();
-
-            string filen = txtAboutOffer.Text + ".png";
-
-            DataSet ds = sdata.getSlider("select * from slider where link='"+ filen + "'");
-            if (ds.Tables[0].Rows.Count > 0)
+            string certNo = SanitizeFileName(txtAboutOffer.Text.Trim());
+            if (string.IsNullOrEmpty(certNo))
             {
-                panel1.Visible = true;
+                ShowError("Please enter a valid Certificate No.");
+                return;
+            }
+
+            string imageName = certNo + ".png";
+            SliderData sdata = new SliderData();
+
+            if (sdata.RowExists(imageName))
+            {
+                DataSet existing = sdata.GetSliderByImageName(imageName);
+                if (existing.Tables[0].Rows.Count > 0)
+                    imageName = existing.Tables[0].Rows[0]["imagename"].ToString();
             }
             else
             {
-
-                sdata.ImageName = txtAboutOffer.Text + ".png";
+                sdata.ImageName = imageName;
                 sdata.SaveQR();
-                GenrateQuareCode(sdata.ImageName);
-                panelMessage.Visible = true;
-                Response.Redirect("GerateQuareCode.aspx");
-
             }
 
-            
+            GenrateQuareCode(imageName);
+            Response.Redirect("GerateQuareCode.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
-        catch (Exception ex) { }
+        catch (Exception ex)
+        {
+            ShowError("Error: " + ex.Message);
+        }
     }
 
     public void GenrateQuareCode(string crNo)
     {
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        string urlss = ShrinkURL("http://gemstonecertificationlabs.com/imagetake.aspx?slider=" + crNo);
+        string urlss = "http://gemstonecertificationlabs.com/imagetake.aspx?slider=" + Server.UrlEncode(crNo);
         QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(urlss, QRCodeGenerator.ECCLevel.L);
         System.Web.UI.WebControls.Image imgBarCode = new System.Web.UI.WebControls.Image();
         imgBarCode.Height = 200;
@@ -211,9 +203,8 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
             string FileName, width, height;
             if (sliderUploadUp.HasFile)
             {
-                extension = String.Empty;
-                extension = sliderUploadUp.FileName.Substring(sliderUploadUp.FileName.LastIndexOf("."));
-                FileName = sliderUploadUp.FileName;
+                string baseName = System.IO.Path.GetFileNameWithoutExtension(sliderUploadUp.FileName);
+                FileName = SanitizeFileName(baseName) + ".png";
 
                 sliderUploadUp.SaveAs(HttpContext.Current.Server.MapPath("~/eadmin/slider/" + FileName));
                 System.Drawing.Image im = System.Drawing.Image.FromStream(sliderUploadUp.PostedFile.InputStream);
@@ -228,15 +219,19 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
             }
 
             SliderData sdata = new SliderData();
-            //sdata.Section = int.Parse(cmbSiteSectionUp.SelectedValue.ToString());
+            if (idup > 0)
+            {
+                SliderData existing = new SliderData(idup);
+                sdata.Offer = existing.Offer;
+                sdata.AboutOffer = existing.AboutOffer;
+                sdata.Section = existing.Section;
+            }
             sdata.ImageName = FileName;
-            //sdata.Offer = txtOfferUp.Text.ToString();
-            //sdata.AboutOffer = txtAboutOfferUp.Text.ToString();
-            sdata.Link = txtLinkUp.Text.ToString().Trim();
+            sdata.Link = string.IsNullOrEmpty(txtLinkUp.Text.Trim()) ? FileName : txtLinkUp.Text.Trim();
             sdata.ImageWidth = width;
             sdata.ImageHeight = height;
             sdata.IsVisible = chkVisibleUp.Checked;
-            //sdata.Update(idup);
+            if (idup > 0) sdata.Update(idup);
 
             resetup();
             updatePanel.Visible = false;
@@ -246,7 +241,9 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 
         }
         catch (Exception ex)
-        { }
+        {
+            ShowError("Update Error: " + ex.Message);
+        }
     }
 
     protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
@@ -292,20 +289,50 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
     }
     protected void btnDelete_Click(object sender, EventArgs e)
     {
-        for (int i = 0; i < rpSilder.Items.Count; i++)
+        try
         {
-            CheckBox chk = (CheckBox)rpSilder.Items[i].FindControl("sliderid");
-            if (chk.Checked)
+            for (int i = 0; i < rpSilder.Items.Count; i++)
             {
-
-                SliderData sdata = new SliderData();
-                sdata.Delete("delete from slider where id=" + chk.Text);
-
+                CheckBox chk = (CheckBox)rpSilder.Items[i].FindControl("sliderid");
+                bool isChecked = chk != null && chk.Checked;
+                if (!isChecked && chk != null)
+                {
+                    isChecked = !string.IsNullOrEmpty(Request.Form[chk.UniqueID]);
+                }
+                if (isChecked)
+                {
+                    int id;
+                    if (int.TryParse(chk.Text, out id))
+                    {
+                        SliderData sdata = new SliderData();
+                        sdata.DeleteById(id);
+                    }
+                }
             }
+            Response.Redirect("GerateQuareCode.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
-        BindData();
-        panelMessage.Visible = true;
-        Response.Redirect("GerateQuareCode.aspx");
+        catch (Exception ex)
+        {
+            ShowError("Delete Error: " + ex.Message);
+        }
+    }
+
+    private void ShowError(string msg)
+    {
+        string js = "alert('" + msg.Replace("'", "\\'").Replace("\r", " ").Replace("\n", " ") + "');";
+        ClientScript.RegisterStartupScript(this.GetType(), "apperror", js, true);
+    }
+
+    private string SanitizeFileName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return "";
+        name = name.Trim();
+        name = name.Replace("..", "");
+        char[] invalid = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
+        foreach (char c in invalid)
+            name = name.Replace(c.ToString(), "");
+        return name.Trim();
     }
     protected void btnCloseMessage_Click(object sender, EventArgs e)
     {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -13,21 +10,23 @@ public partial class imagetake : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            cerfiid = Request.QueryString["slider"].ToString();
+            cerfiid = Request.QueryString["slider"];
             takeimagevalue();
         }
     }
 
     protected void takeimagevalue()
     {
+        if (string.IsNullOrEmpty(cerfiid))
+        {
+            rpthome.DataSource = null;
+            rpthome.DataBind();
+            return;
+        }
 
         SliderData fd = new SliderData();
-        DataSet dsSt = fd.getSlider("select * from slider where imagename='" + cerfiid + "'");
+        DataSet dsSt = fd.GetSliderByImageName(cerfiid.Trim());
         rpthome.DataSource = dsSt;
         rpthome.DataBind();
-
-
-
-
     }
 }

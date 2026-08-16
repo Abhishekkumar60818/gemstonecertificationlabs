@@ -39,7 +39,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <h3>Sorry QR Code Alredy Exites</h3>
+                    <h3>QR Code Already Exists</h3>
 
                 </div>
                 <div class="row">
@@ -107,7 +107,7 @@
                                                                <th>S.No</th>
                                                                 <th>QR Code </th>
                                                                  <th>Certificate</th>
-                                                                 <th>Certificate No</th>
+                                                                  <th>Certificate No</th>
                                                                 <th>Download</th>
                                                             </tr>
                                                         </thead>
@@ -139,11 +139,10 @@
                                                                           <%#Eval("imagename") %>
                                                                         </td>
                                                               
-
                                                                         <td>
                                                                             <a href="qrimg/<%#Eval("link")  %>" download> Download</a>
                                                                         </td>
-                                                              
+                                                               
                                                                     </tr>
                                                                 </ItemTemplate>
                                                             </asp:Repeater>

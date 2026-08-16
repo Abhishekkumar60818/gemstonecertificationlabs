@@ -105,12 +105,20 @@ public class Connection
     }
     public void ExecStatement(String sql, List<MySqlParameter> Parameters)
     {
-        using (MySqlCommand cmd = SqlCmnd())
+        try
         {
-            cmd.CommandText = sql;
-            for (int i = 0; i < Parameters.Count; i++)
-                cmd.Parameters.Add(Parameters[i]);
-            cmd.ExecuteNonQuery();
+            using (MySqlCommand cmd = SqlCmnd())
+            {
+                cmd.CommandText = sql;
+                for (int i = 0; i < Parameters.Count; i++)
+                    cmd.Parameters.Add(Parameters[i]);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        finally
+        {
+            if (con != null && con.State != System.Data.ConnectionState.Closed)
+                con.Close();
         }
     }
 

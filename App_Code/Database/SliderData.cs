@@ -43,8 +43,8 @@ public class SliderData
                 _Link = ds.Tables[0].Rows[0]["link"].ToString();
                 _ImgWidth = ds.Tables[0].Rows[0]["imgwidth"].ToString();
                 _ImgHeihgt = ds.Tables[0].Rows[0]["imgheight"].ToString();
-                _IsVisible =bool.Parse( ds.Tables[0].Rows[0]["isvisible"].ToString());
-                _Section = int.Parse(ds.Tables[0].Rows[0]["section"].ToString());
+                _IsVisible = ParseBool(ds.Tables[0].Rows[0]["isvisible"]);
+                _Section = ParseInt(ds.Tables[0].Rows[0]["section"]);
                
             }
             else
@@ -91,15 +91,69 @@ public class SliderData
         connect = null;
     }
 
-    public void Update(string id)
+    public void Update(int id)
     {
         List<MySqlParameter> param = new List<MySqlParameter>();
-       
+        param.Add(new MySqlParameter("@id", id));
         param.Add(new MySqlParameter("@imagename", _ImageName));
-       
-    
+        param.Add(new MySqlParameter("@offer", _Offer));
+        param.Add(new MySqlParameter("@aboutoffer", _AboutOffer));
+        param.Add(new MySqlParameter("@link", _Link));
+        param.Add(new MySqlParameter("@imgwidth", _ImgWidth));
+        param.Add(new MySqlParameter("@imgheight", _ImgHeihgt));
+        param.Add(new MySqlParameter("@isvisible", _IsVisible));
+        param.Add(new MySqlParameter("@section", _Section));
         Connection connect = new Connection();
-        connect.ExecStatement("UPDATE slider SET imagename=@imagename WHERE imagename=@imagename", param);
+        connect.ExecStatement("UPDATE slider SET imagename=@imagename,link=@link,imgwidth=@imgwidth,imgheight=@imgheight,isvisible=@isvisible,offer=@offer,aboutoffer=@aboutoffer,section=@section WHERE id=@id", param);
+        connect.Dispose();
+        connect = null;
+    }
+
+    public bool RowExists(string imageName)
+    {
+        List<MySqlParameter> param = new List<MySqlParameter>();
+        param.Add(new MySqlParameter("@imagename", imageName));
+        Connection connect = new Connection();
+        DataSet ds = connect.GetDataset("SELECT id FROM slider WHERE imagename=@imagename", param);
+        connect.Dispose();
+        connect = null;
+        return ds.Tables[0].Rows.Count > 0;
+    }
+
+    public void UpsertByImageName()
+    {
+        if (RowExists(_ImageName))
+        {
+            List<MySqlParameter> param = new List<MySqlParameter>();
+            param.Add(new MySqlParameter("@imagename", _ImageName));
+            Connection connect = new Connection();
+            connect.ExecStatement("UPDATE slider SET link=@imagename WHERE imagename=@imagename", param);
+            connect.Dispose();
+            connect = null;
+        }
+        else
+        {
+            SaveQR();
+        }
+    }
+
+    public DataSet GetSliderByImageName(string imageName)
+    {
+        List<MySqlParameter> param = new List<MySqlParameter>();
+        param.Add(new MySqlParameter("@imagename", imageName));
+        Connection connect = new Connection();
+        DataSet ds = connect.GetDataset("SELECT * FROM slider WHERE imagename=@imagename", param);
+        connect.Dispose();
+        connect = null;
+        return ds;
+    }
+
+    public void DeleteById(int id)
+    {
+        List<MySqlParameter> param = new List<MySqlParameter>();
+        param.Add(new MySqlParameter("@id", id));
+        Connection connect = new Connection();
+        connect.ExecStatement("DELETE FROM slider WHERE id=@id", param);
         connect.Dispose();
         connect = null;
     }
@@ -172,6 +226,23 @@ public class SliderData
     {
         get;
         set;
+    }
+
+    private static bool ParseBool(object value)
+    {
+        if (value == null || value == DBNull.Value) return false;
+        string s = value.ToString().Trim();
+        if (s == "1") return true;
+        if (s == "0") return false;
+        bool result;
+        return bool.TryParse(s, out result) && result;
+    }
+
+    private static int ParseInt(object value)
+    {
+        if (value == null || value == DBNull.Value) return 0;
+        int result;
+        return int.TryParse(value.ToString().Trim(), out result) ? result : 0;
     }
 
     

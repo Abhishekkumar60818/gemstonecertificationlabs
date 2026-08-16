@@ -17,22 +17,25 @@ public partial class Certificate : System.Web.UI.Page
 
     protected void btncheck_Click(object sender, EventArgs e)
     {
-        string valuetxt = txtcertifid.Text.ToString()+ ".png";
-        
-        string imageva;
+        string valuetxt = txtcertifid.Text.Trim();
+        if (string.IsNullOrEmpty(valuetxt))
+        {
+            ClientScript.RegisterStartupScript(this.GetType(), "notfound", "alert('Please enter a Certificate ID');", true);
+            return;
+        }
+
+        valuetxt += ".png";
         SliderData ad = new SliderData();
-        DataSet dsSt = ad.getSlider("select * from slider where imagename='"+ valuetxt + "'"); /*"select * from slider where imagename LIKE '%" + valuetxt + "%'"*/
+        DataSet dsSt = ad.GetSliderByImageName(valuetxt);
         if (dsSt.Tables[0].Rows.Count == 0)
         {
-            Response.Write("<script>alert('certificate not found')</script>");   
+            ClientScript.RegisterStartupScript(this.GetType(), "notfound", "alert('certificate not found');", true);
         }
         else
         {
-            imageva = dsSt.Tables[0].Rows[0]["imagename"].ToString();
-            Response.Redirect("imagetake.aspx?slider=" + Server.UrlEncode(dsSt.Tables[0].Rows[0]["imagename"].ToString()));
-            //Response.Redirect("imagetake.aspx?id=" + dsSt.Tables[0].Rows[0]["id"].ToString());
+            Response.Redirect("imagetake.aspx?slider=" + Server.UrlEncode(dsSt.Tables[0].Rows[0]["imagename"].ToString()), false);
+            Context.ApplicationInstance.CompleteRequest();
         }
-        
     }
 
 
