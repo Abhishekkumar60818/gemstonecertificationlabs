@@ -165,6 +165,13 @@ public class SliderData
         DataSet ds = connect.GetDataset(query);
         return ds;
     }
+
+    public DataSet getSlider(String query, List<MySqlParameter> parameters)
+    {
+        Connection connect = new Connection();
+        DataSet ds = connect.GetDataset(query, parameters);
+        return ds;
+    }
    
     public void Delete(string query)
     {

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using MySql.Data.MySqlClient;
 
 public partial class eadmin_GerateQuareCode : System.Web.UI.Page
 {
@@ -49,6 +50,12 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
         set { ViewState["PageSize"] = value; }
     }
 
+    private string SearchText
+    {
+        get { return ViewState["SearchText"] == null ? "" : ViewState["SearchText"].ToString(); }
+        set { ViewState["SearchText"] = value; }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -65,17 +72,33 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
     private void BindData()
     {
         SliderData sdata = new SliderData();
-        DataSet dsCount = sdata.getSlider("select count(*) as cnt from slider");
+        string whereClause = "";
+        List<MySqlParameter> searchParams = new List<MySqlParameter>();
+        if (!string.IsNullOrEmpty(SearchText))
+        {
+            whereClause = " WHERE imagename LIKE @search";
+            searchParams.Add(new MySqlParameter("@search", "%" + SearchText + "%"));
+        }
+
+        string countSql = "select count(*) as cnt from slider" + whereClause;
+        string dataSql = "select * from slider" + whereClause + " order by id desc limit @limit offset @offset";
+
+        List<MySqlParameter> countParams = new List<MySqlParameter>(searchParams);
+        searchParams.Add(new MySqlParameter("@limit", PageSize));
+        searchParams.Add(new MySqlParameter("@offset", (CurrentPage - 1) * PageSize));
+
         int totalCount = 0;
-        if (dsCount.Tables[0].Rows.Count > 0)
-            totalCount = int.Parse(dsCount.Tables[0].Rows[0]["cnt"].ToString());
+        using (DataSet dsCount = sdata.getSlider(countSql, countParams))
+        {
+            if (dsCount.Tables[0].Rows.Count > 0)
+                totalCount = int.Parse(dsCount.Tables[0].Rows[0]["cnt"].ToString());
+        }
 
         int totalPages = totalCount == 0 ? 1 : (int)Math.Ceiling((double)totalCount / PageSize);
         if (CurrentPage > totalPages) CurrentPage = totalPages;
         if (CurrentPage < 1) CurrentPage = 1;
 
-        int offset = (CurrentPage - 1) * PageSize;
-        DataSet ds = sdata.getSlider("select * from slider order by id desc limit " + PageSize + " offset " + offset);
+        DataSet ds = sdata.getSlider(dataSql, searchParams);
         rpSilder.DataSource = ds;
         rpSilder.DataBind();
 
@@ -309,6 +332,8 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
                     }
                 }
             }
+            SearchText = "";
+            txtSearch.Text = "";
             Response.Redirect("GerateQuareCode.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
         }
@@ -316,6 +341,21 @@ public partial class eadmin_GerateQuareCode : System.Web.UI.Page
         {
             ShowError("Delete Error: " + ex.Message);
         }
+    }
+
+    protected void btnSearch_Click(object sender, EventArgs e)
+    {
+        SearchText = txtSearch.Text.Trim();
+        CurrentPage = 1;
+        BindData();
+    }
+
+    protected void btnClearSearch_Click(object sender, EventArgs e)
+    {
+        txtSearch.Text = "";
+        SearchText = "";
+        CurrentPage = 1;
+        BindData();
     }
 
     private void ShowError(string msg)

@@ -56,7 +56,16 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             Certificate
-                                             <div class="pull-right"><asp:Button ID="btnDelete" runat="server" Text="Delete" CssClass="btn btn-danger" OnClick="btnDelete_Click"   /></div>
+                                             <div class="pull-right">
+                                                 <asp:Button ID="btnDelete" runat="server" Text="Delete" CssClass="btn btn-danger" OnClick="btnDelete_Click" />
+                                             </div>
+                                             <div class="pull-right" style="margin-right:10px;">
+                                                 <asp:Panel ID="pnlSearch" runat="server" DefaultButton="btnSearch" style="display:inline;">
+                                                     <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Search by Certificate No / Image Name" style="display:inline-block;width:250px;" />
+                                                     <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-info" OnClick="btnSearch_Click" style="display:inline-block;" />
+                                                     <asp:Button ID="btnClearSearch" runat="server" Text="Clear" CssClass="btn btn-default" OnClick="btnClearSearch_Click" style="display:inline-block;" />
+                                                 </asp:Panel>
+                                             </div>
                                         </div>
                                         
                                             <div class="panel-body">
